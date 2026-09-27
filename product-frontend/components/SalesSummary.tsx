@@ -3,36 +3,32 @@
 import type { ProductSalesSummary } from "@/types/product";
 
 interface SalesSummaryProps {
-  productName: string;
   summary: ProductSalesSummary | null;
   loading: boolean;
   error: string | null;
 }
 
 export function SalesSummary({
-  productName,
   summary,
   loading,
   error,
 }: SalesSummaryProps) {
   if (loading) {
     return (
-      <section className="rounded-xl border bg-white p-6 shadow-sm">
-        <p className="text-gray-500">
-          Loading sales summary for {productName}...
-        </p>
-      </section>
+      <p className="text-sm text-gray-500" role="status">
+        Loading sales summary...
+      </p>
     );
   }
 
   if (error) {
     return (
-      <section className="rounded-xl border border-red-200 bg-red-50 p-6">
-        <h2 className="font-semibold text-red-900">
+      <section aria-label="Sales summary error">
+        <h3 className="text-sm font-semibold text-red-900">
           Unable to load sales summary
-        </h2>
+        </h3>
 
-        <p className="mt-2 text-sm text-red-700">
+        <p className="mt-1 text-sm text-red-700">
           {error}
         </p>
       </section>
@@ -40,28 +36,16 @@ export function SalesSummary({
   }
 
   if (!summary) {
-    return (
-      <section className="rounded-xl border bg-white p-6 shadow-sm">
-        <p className="text-gray-500">
-          Select a product to view its sales summary.
-        </p>
-      </section>
-    );
+    return null;
   }
 
   return (
-    <section className="rounded-xl border bg-white p-6 shadow-sm">
-      <div className="mb-6">
-        <p className="text-sm text-gray-500">
-          Sales summary
-        </p>
+    <section aria-label="Sales summary">
+      <h3 className="text-sm font-semibold text-gray-700">
+        Sales summary
+      </h3>
 
-        <h2 className="text-2xl font-bold text-gray-900">
-          {productName}
-        </h2>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <dl className="mt-3 space-y-2">
         <SummaryItem
           label="Sales"
           value={summary.numberOfSales.toString()}
@@ -76,7 +60,7 @@ export function SalesSummary({
           label="Total Sales"
           value={summary.totalSales.toFixed(2)}
         />
-      </div>
+      </dl>
     </section>
   );
 }
@@ -91,14 +75,14 @@ function SummaryItem({
   value,
 }: SummaryItemProps) {
   return (
-    <div className="rounded-lg bg-gray-50 p-4">
-      <p className="text-sm text-gray-500">
+    <div className="flex items-baseline justify-between gap-3 border-b border-gray-100 pb-2 last:border-0 last:pb-0">
+      <dt className="text-sm text-gray-500">
         {label}
-      </p>
+      </dt>
 
-      <p className="mt-1 text-xl font-bold text-gray-900">
+      <dd className="text-right text-sm font-semibold tabular-nums text-gray-900">
         {value}
-      </p>
+      </dd>
     </div>
   );
 }

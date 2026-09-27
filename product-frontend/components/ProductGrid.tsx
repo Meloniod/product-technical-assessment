@@ -1,17 +1,24 @@
 "use client";
 
 import type { Product } from "@/types/product";
+import type { ProductSalesSummary } from "@/types/product";
 import { ProductCard } from "./ProductCard";
 
 interface ProductGridProps {
   products: Product[];
   selectedProductId: number | null;
+  summary: ProductSalesSummary | null;
+  loading: boolean;
+  error: string | null;
   onSelect: (product: Product) => void;
 }
 
 export function ProductGrid({
   products,
   selectedProductId,
+  summary,
+  loading,
+  error,
   onSelect,
 }: ProductGridProps) {
   if (products.length === 0) {
@@ -29,6 +36,9 @@ export function ProductGrid({
           key={product.id}
           product={product}
           selected={product.id === selectedProductId}
+          summary={summary}
+          loading={loading}
+          error={error}
           onSelect={onSelect}
         />
       ))}

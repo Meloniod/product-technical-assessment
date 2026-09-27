@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 
 import { ProductGrid } from "@/components/ProductGrid";
-import { SalesSummary } from "@/components/SalesSummary";
 
 import {
   getProductSalesSummary,
@@ -79,6 +78,14 @@ export default function Home() {
   async function handleProductSelect(
     product: Product
   ) {
+    if (selectedProduct?.id === product.id) {
+      salesAbortController.current?.abort();
+      salesAbortController.current = null;
+      setSelectedProduct(null);
+      setLoadingSales(false);
+      return;
+    }
+
     salesAbortController.current?.abort();
 
     const controller =
@@ -163,20 +170,12 @@ export default function Home() {
             selectedProductId={
               selectedProduct?.id ?? null
             }
-            onSelect={handleProductSelect}
-          />
-        )}
-
-        <div className="mt-10">
-          <SalesSummary
-            productName={
-              selectedProduct?.description ?? ""
-            }
             summary={salesSummary}
             loading={loadingSales}
             error={salesError}
+            onSelect={handleProductSelect}
           />
-        </div>
+        )}
       </div>
     </main>
   );

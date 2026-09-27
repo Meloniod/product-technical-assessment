@@ -7,6 +7,12 @@ This repository contains a product dashboard with a Next.js frontend and an ASP.
 
 ## Run Manually
 
+The manual setup uses HTTPS for the API, so trust the ASP.NET Core development certificate on your machine if you have not already:
+
+```powershell
+dotnet dev-certs https --trust
+```
+
 Start the API from the repository root:
 
 ```powershell
@@ -24,7 +30,7 @@ $env:NEXT_PUBLIC_API_BASE_URL = "https://localhost:7220"
 npm run dev
 ```
 
-Open `http://localhost:3000`. The frontend API URL is supplied through `NEXT_PUBLIC_API_BASE_URL`; set it before starting the frontend. The checked-in `.env.local` is configured for the HTTPS launch profile, so the command above overrides it for the HTTP profile.
+Open `http://localhost:3000`. The frontend API URL is supplied through `NEXT_PUBLIC_API_BASE_URL`; the checked-in `.env.local` already points to the HTTPS API URL shown above.
 
 ## Run With Docker Compose
 
@@ -35,6 +41,8 @@ docker compose up --build
 ```
 
 Open the frontend at `http://localhost:3000`. The API is published at `http://localhost:8080`, with Swagger at `http://localhost:8080/swagger`. The Compose build sets `NEXT_PUBLIC_API_BASE_URL` to the host-accessible API URL because API requests are made by the user's browser.
+
+Docker Compose serves both services over HTTP, so this setup does not require or mount an HTTPS certificate. Use the manual setup above when you want HTTPS locally.
 
 Stop the services with `Ctrl+C`, then remove the containers with:
 
