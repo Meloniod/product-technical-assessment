@@ -8,11 +8,6 @@ namespace Application.Services.Helpers
             int productId,
             IReadOnlyCollection<Sale> sales)
         {
-            if (productId <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(productId));
-            }
-
             ArgumentNullException.ThrowIfNull(sales);
 
             var numberOfSales = sales.Count;
@@ -20,6 +15,10 @@ namespace Application.Services.Helpers
             var totalQuantity = sales.Sum(
                 sale => sale.SaleQuantity);
 
+            // The assessment API exposes salePrice but does not document whether
+            // it represents a unit price or the monetary value of the sale record.
+            // The current implementation treats it as the monetary value supplied
+            // by each sale record and therefore sums salePrice directly.
             var totalSales = sales.Sum(
                 sale => sale.SalePrice);
 

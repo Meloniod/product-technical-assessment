@@ -1,22 +1,44 @@
 ﻿using Application.Contracts;
 using Infrastructure.Client;
+using Infrastructure.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure
 {
     public static class DependencyInjection
     {
-        private const string BaseUrl =
-            "https://singularsystems-tech-assessment-sales-api2.azurewebsites.net/";
-
         public static IServiceCollection AddInfrastructure(
-            this IServiceCollection services)
+        this IServiceCollection services,
+        IConfiguration configuration)
         {
-            services.AddHttpClient<IProductSalesApiClient, ProductSalesApiClient>(
-                client =>
+            services.Configure<SalesApiOptions>(
+                configuration.GetSection(
+                    SalesApiOptions.SectionName));
+
+            services.AddHttpClient<IProductSalesApiClient,
+                ProductSalesApiClient>((serviceProvider, client) =>
                 {
-                    client.BaseAddress = new Uri(BaseUrl);
-                    client.Timeout = TimeSpan.FromSeconds(300);
+                    var options =
+                        serviceProvider
+                            .GetRequiredService<
+                                Microsoft.Extensions.Options
+                                    .IOptions<SalesApiOptions>>()
+                            .Value;
+
+                    if (string.IsNullOrWhiteSpace(
+                        options.BaseUrl))
+                    {
+                        throw new InvalidOperationException(
+                            "SalesApi:BaseUrl is not configured.");
+                    }
+
+                    client.BaseAddress =
+                        new Uri(options.BaseUrl);
+
+                    client.Timeout =
+                        TimeSpan.FromSeconds(
+                            options.TimeoutSeconds);
                 });
 
             return services;

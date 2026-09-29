@@ -20,26 +20,36 @@ namespace Api.ExceptionHandling
         {
             _logger.LogError(
                 exception,
-                "Unhandled exception while processing {Method} {Path}",
+                "Unhandled exception processing {Method} {Path}",
                 httpContext.Request.Method,
                 httpContext.Request.Path);
 
             var problemDetails = exception switch
             {
+                ArgumentOutOfRangeException =>
+                    new ProblemDetails
+                    {
+                        Status = StatusCodes.Status400BadRequest,
+                        Title = "Invalid request."
+                    },
+
                 HttpRequestException =>
                     new ProblemDetails
                     {
                         Status = StatusCodes.Status502BadGateway,
-                        Title = "External service unavailable",
-                        Detail = "The product service could not be reached."
+                        Title = "External service unavailable.",
+                        Detail =
+                            "The product service could not be reached."
                     },
 
                 _ =>
                     new ProblemDetails
                     {
-                        Status = StatusCodes.Status500InternalServerError,
+                        Status =
+                            StatusCodes.Status500InternalServerError,
                         Title = "An unexpected error occurred.",
-                        Detail = "The request could not be completed."
+                        Detail =
+                            "The request could not be completed."
                     }
             };
 

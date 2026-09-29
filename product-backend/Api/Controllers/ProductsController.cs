@@ -29,14 +29,6 @@ namespace Api.Controllers
             int productId,
             CancellationToken cancellationToken)
         {
-            if (productId <= 0)
-            {
-                return BadRequest(
-                    new
-                    {
-                        message = "Product ID must be greater than zero."
-                    });
-            }
             var summary =
                 await _productSalesService.GetProductSalesSummaryAsync(
                     productId,

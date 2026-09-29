@@ -47,6 +47,7 @@ namespace Application.Tests.Services
             Assert.Equal(1197.12m, result.TotalSales);
         }
 
+        [Fact]
         public void GivenNoSalesData_WhenCalculatingWithNoSales_ThenReturnEmptySummary()
         {
             // Arrange

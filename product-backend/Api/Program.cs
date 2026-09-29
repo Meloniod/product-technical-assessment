@@ -8,6 +8,7 @@ var allowSpecificOrigins = "_allowSpecificOrigins";
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 builder.Services.AddControllers();
+builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 builder.Services.AddCors(options =>
 {
@@ -37,6 +38,8 @@ app.UseHttpsRedirection();
 app.UseCors(allowSpecificOrigins);
 
 app.UseAuthorization();
+
+app.UseExceptionHandler();
 
 app.MapControllers();
 

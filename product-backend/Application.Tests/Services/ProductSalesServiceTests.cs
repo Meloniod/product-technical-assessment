@@ -71,7 +71,7 @@ namespace Application.Tests.Services
         }
 
         [Fact]
-        public async Task GetProductSalesSummaryAsync_PropagatesCancellationToken()
+        public async Task GivenRequestProductSalesSummary_WhenCancellationTokenSentInRequest_ThenPropagateCancellationToken()
         {
             // Arrange
             var apiClient = new MockProductSalesApiClient();
