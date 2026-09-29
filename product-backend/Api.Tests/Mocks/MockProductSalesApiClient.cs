@@ -2,24 +2,26 @@
 using Domain.Products;
 using Domain.Sales;
 
-namespace Application.Tests.Mocks
+namespace Api.Tests.Mocks
 {
     public sealed class MockProductSalesApiClient
     : IProductSalesApiClient
     {
-        public IReadOnlyList<Product> Products { get; set; } =
-            Array.Empty<Product>();
+        public IReadOnlyList<Product> Products { get; set; }
+            = Array.Empty<Product>();
 
-        public IReadOnlyList<Sale> Sales { get; set; } =
-            Array.Empty<Sale>();
+        public IReadOnlyList<Sale> Sales { get; set; }
+            = Array.Empty<Sale>();
+
+        public Exception? ExceptionToThrow { get; set; }
 
         public int RequestedProductId { get; private set; }
-
-        public CancellationToken ReceivedCancellationToken { get; private set; }
 
         public Task<IReadOnlyList<Product>> GetProductsAsync(
             CancellationToken cancellationToken)
         {
+            ThrowIfConfigured();
+
             return Task.FromResult(Products);
         }
 
@@ -27,12 +29,19 @@ namespace Application.Tests.Mocks
             int productId,
             CancellationToken cancellationToken)
         {
+            ThrowIfConfigured();
+
             RequestedProductId = productId;
-            ReceivedCancellationToken = cancellationToken;
 
             return Task.FromResult(Sales);
         }
 
-        
+        private void ThrowIfConfigured()
+        {
+            if (ExceptionToThrow is not null)
+            {
+                throw ExceptionToThrow;
+            }
+        }
     }
 }

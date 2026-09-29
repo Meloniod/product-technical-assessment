@@ -2,6 +2,7 @@
 using Domain.Products;
 using Domain.Sales;
 using Infrastructure.Models;
+using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
 
 namespace Infrastructure.Client
@@ -9,23 +10,31 @@ namespace Infrastructure.Client
     public sealed class ProductSalesApiClient : IProductSalesApiClient
     {
         private readonly HttpClient _httpClient;
+        private readonly ILogger<ProductSalesApiClient> _logger;
 
-        public ProductSalesApiClient(HttpClient httpClient)
+        public ProductSalesApiClient(
+            HttpClient httpClient,
+            ILogger<ProductSalesApiClient> logger)
         {
             _httpClient = httpClient;
+            _logger = logger;
         }
 
         public async Task<IReadOnlyList<Product>> GetProductsAsync(
             CancellationToken cancellationToken)
         {
-            var products = await _httpClient.GetFromJsonAsync<
-                List<ProductResponse>>(
-                    "products",
-                    cancellationToken);
+            _logger.LogInformation(
+                "Requesting products from external sales API.");
+
+            var products =
+                await _httpClient.GetFromJsonAsync<
+                    IReadOnlyList<ProductResponse>>(
+                        "products",
+                        cancellationToken);
 
             if (products is null)
             {
-                return [];
+                return Array.Empty<Product>();
             }
 
             return products
@@ -37,14 +46,19 @@ namespace Infrastructure.Client
             int productId,
             CancellationToken cancellationToken)
         {
-            var sales = await _httpClient.GetFromJsonAsync<
-                List<ProductSaleResponse>>(
-                    $"product-sales?Id={productId}",
-                    cancellationToken);
+            _logger.LogInformation(
+                "Requesting sales for product {ProductId}.",
+                productId);
+
+            var sales =
+                await _httpClient.GetFromJsonAsync<
+                    IReadOnlyList<ProductSaleResponse>>(
+                        $"product-sales?Id={productId}",
+                        cancellationToken);
 
             if (sales is null)
             {
-                return [];
+                return Array.Empty<Sale>();
             }
 
             return sales
@@ -52,7 +66,8 @@ namespace Infrastructure.Client
                 .ToList();
         }
 
-        private static Product MapProduct(ProductResponse response)
+        private static Product MapProduct(
+            ProductResponse response)
         {
             return new Product(
                 response.Id,
@@ -62,7 +77,8 @@ namespace Infrastructure.Client
                 response.Image);
         }
 
-        private static Sale MapSale(ProductSaleResponse response)
+        private static Sale MapSale(
+            ProductSaleResponse response)
         {
             return new Sale(
                 response.SaleId,
