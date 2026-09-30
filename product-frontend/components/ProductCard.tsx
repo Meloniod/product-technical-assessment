@@ -1,6 +1,7 @@
 "use client";
 
 import type { Product } from "@/types/product";
+import Image from "next/image";
 
 interface ProductCardProps {
   product: Product;
@@ -30,10 +31,13 @@ export function ProductCard({
           : "border-gray-200",
       ].join(" ")}
     >
-      <div className="aspect-square overflow-hidden bg-gray-100">
-        <img
+      <div className="relative aspect-square overflow-hidden bg-gray-100">
+        <Image
           src={product.image}
           alt={product.description}
+          fill
+          unoptimized
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
         />
       </div>
