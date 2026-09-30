@@ -1,6 +1,7 @@
 "use client";
 
-import type { ProductSalesSummary } from "@/types/product";
+import { ProductSalesSummary } from "@/types/productSalesSummary";
+
 
 interface SalesSummaryProps {
   summary: ProductSalesSummary | null;

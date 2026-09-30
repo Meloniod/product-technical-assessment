@@ -4,24 +4,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
+
     [ApiController]
     [Route("api/products")]
     public sealed class ProductsController : ControllerBase
     {
         private readonly ProductSalesService _productSalesService;
 
-        public ProductsController(
-            ProductSalesService productSalesService)
+        public ProductsController(ProductSalesService productSalesService)
         {
             _productSalesService = productSalesService;
         }
 
         [HttpGet]
-        [ProducesResponseType(
-    StatusCodes.Status200OK)]
-        public async Task<ActionResult<
-    IReadOnlyList<ProductResponse>>> GetProducts(
-    CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IReadOnlyList<ProductResponse>>> GetProducts(
+            CancellationToken cancellationToken)
         {
             var products =
                 await _productSalesService.GetProductsAsync(
@@ -42,15 +40,12 @@ namespace Api.Controllers
         }
 
         [HttpGet("{productId:int}/sales-summary")]
-        [ProducesResponseType(
-        StatusCodes.Status200OK)]
-            [ProducesResponseType(
-        StatusCodes.Status400BadRequest)]
-            public async Task<ActionResult<
-        ProductSalesSummaryResponse>>
-        GetProductSalesSummary(
-        int productId,
-        CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<ProductSalesSummaryResponse>>
+            GetProductSalesSummary(
+                int productId,
+                CancellationToken cancellationToken)
         {
             var summary =
                 await _productSalesService

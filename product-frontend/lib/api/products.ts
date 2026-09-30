@@ -1,25 +1,31 @@
 import type {
-  Product,
-  ProductSalesSummary,
+  Product
 } from "@/types/product";
+import { ProductSalesSummary } from "@/types/productSalesSummary";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL;
+function getApiBaseUrl(): string {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_API_BASE_URL;
 
-if (!API_BASE_URL) {
-  throw new Error(
-    "NEXT_PUBLIC_API_BASE_URL is not configured."
-  );
+  if (!baseUrl) {
+    throw new Error(
+      "NEXT_PUBLIC_API_BASE_URL is not configured."
+    );
+  }
+
+  return baseUrl.replace(/\/$/, "");
 }
 
 async function handleResponse<T>(
   response: Response
 ): Promise<T> {
   if (!response.ok) {
-    let message = "An unexpected error occurred.";
+    let message =
+      "An unexpected error occurred.";
 
     try {
-      const problem = await response.json();
+      const problem =
+        await response.json();
 
       if (problem.detail) {
         message = problem.detail;
@@ -40,14 +46,16 @@ export async function getProducts(
   signal?: AbortSignal
 ): Promise<Product[]> {
   const response = await fetch(
-    `${API_BASE_URL}/api/products`,
+    `${getApiBaseUrl()}/api/products`,
     {
       method: "GET",
       signal,
     }
   );
 
-  return handleResponse<Product[]>(response);
+  return handleResponse<Product[]>(
+    response
+  );
 }
 
 export async function getProductSalesSummary(
@@ -55,7 +63,7 @@ export async function getProductSalesSummary(
   signal?: AbortSignal
 ): Promise<ProductSalesSummary> {
   const response = await fetch(
-    `${API_BASE_URL}/api/products/${productId}/sales-summary`,
+    `${getApiBaseUrl()}/api/products/${productId}/sales-summary`,
     {
       method: "GET",
       signal,
