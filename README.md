@@ -5,6 +5,31 @@ This repository contains a product dashboard with a Next.js frontend and an ASP.
 - .NET 8 SDK and Node.js 22 (with npm) to run the applications manually.
 - Docker with the Docker Compose plugin to run the containerized applications.
 
+## Run Tests
+
+Run the backend test projects from the repository root:
+
+```powershell
+dotnet test .\product-backend\Api.Tests\Api.Tests.csproj
+dotnet test .\product-backend\Application.Tests\Application.Tests.csproj
+```
+
+Run the frontend tests from the frontend directory:
+
+```powershell
+cd .\product-frontend
+npm ci
+npm test
+```
+
+To run a single frontend test file, pass its path to Vitest, for example:
+
+```powershell
+npm test -- components/ProductCard.test.tsx
+```
+
+Run the frontend linter with `npm run lint` from `product-frontend`.
+
 ## Run Manually
 
 The manual setup uses HTTPS for the API, so trust the ASP.NET Core development certificate on your machine if you have not already:
