@@ -4,12 +4,14 @@ import { ProductSalesSummary } from "@/types/productSalesSummary";
 
 
 interface SalesSummaryProps {
+  productName: string;
   summary: ProductSalesSummary | null;
   loading: boolean;
   error: string | null;
 }
 
 export function SalesSummary({
+  productName,
   summary,
   loading,
   error,
@@ -43,7 +45,7 @@ export function SalesSummary({
   return (
     <section aria-label="Sales summary">
       <h3 className="text-sm font-semibold text-gray-700">
-        Sales summary
+        Sales summary for {productName}
       </h3>
 
       <dl className="mt-3 space-y-2">
@@ -54,7 +56,7 @@ export function SalesSummary({
 
         <SummaryItem
           label="Quantity"
-          value={summary.totalQuantity.toLocaleString()}
+          value={summary.totalQuantity.toLocaleString("en-US")}
         />
 
         <SummaryItem

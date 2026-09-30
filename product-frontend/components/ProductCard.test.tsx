@@ -49,7 +49,7 @@ describe("ProductCard", () => {
 
     await user.click(
       screen.getByRole("button", {
-        name: /select cherries/i,
+        name: /view sales summary for cherries/i
       })
     );
 
@@ -69,7 +69,7 @@ describe("ProductCard", () => {
     );
 
     const button = screen.getByRole("button", {
-      name: /select cherries/i,
+      name: /view sales summary for cherries/i
     });
 
     button.focus();
@@ -90,7 +90,7 @@ describe("ProductCard", () => {
 
     expect(
       screen.getByRole("button", {
-        name: /select cherries/i,
+        name: /view sales summary for cherries/i
       })
     ).toHaveAttribute("aria-pressed", "true");
   });

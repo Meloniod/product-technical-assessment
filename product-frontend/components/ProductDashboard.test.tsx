@@ -69,7 +69,7 @@ describe("ProductDashboard", () => {
 
     await user.click(
       screen.getByRole("button", {
-        name: /select cherries/i,
+        name: /view sales summary for cherries/i
       })
     );
 
@@ -110,7 +110,7 @@ describe("ProductDashboard", () => {
 
     await user.click(
       screen.getByRole("button", {
-        name: /select cherries/i,
+        name: /view sales summary for cherries/i
       })
     );
 
@@ -136,7 +136,7 @@ describe("ProductDashboard", () => {
 
     await user.click(
       screen.getByRole("button", {
-        name: /select cherries/i,
+        name: /view sales summary for cherries/i
       })
     );
 

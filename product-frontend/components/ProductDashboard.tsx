@@ -98,6 +98,7 @@ export function ProductDashboard({
       />
 
       <SalesSummary
+        productName={selectedProduct?.description ?? ""}
         summary={summary}
         loading={loading}
         error={error}

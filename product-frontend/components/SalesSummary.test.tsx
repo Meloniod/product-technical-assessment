@@ -1,23 +1,8 @@
-import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import { SalesSummary } from "./SalesSummary";
 
 describe("SalesSummary", () => {
-  it("shows the initial state when no product is selected", () => {
-    render(
-      <SalesSummary
-        productName=""
-        summary={null}
-        loading={false}
-        error={null}
-      />
-    );
-
-    expect(
-      screen.getByText(/select a product/i)
-    ).toBeInTheDocument();
-  });
-
   it("shows loading state", () => {
     render(
       <SalesSummary
@@ -29,8 +14,8 @@ describe("SalesSummary", () => {
     );
 
     expect(
-      screen.getByText(/loading sales summary/i)
-    ).toBeInTheDocument();
+      screen.getByRole("status")
+    ).toHaveTextContent("Loading sales summary...");
   });
 
   it("shows an error", () => {
@@ -39,12 +24,18 @@ describe("SalesSummary", () => {
         productName="Cherries"
         summary={null}
         loading={false}
-        error="Unable to load sales summary."
+        error="Unable to contact the sales service."
       />
     );
 
     expect(
-      screen.getByText("Unable to load sales summary.")
+      screen.getByRole("region", {
+        name: /sales summary error/i,
+      })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Unable to contact the sales service.")
     ).toBeInTheDocument();
   });
 
@@ -64,19 +55,41 @@ describe("SalesSummary", () => {
     );
 
     expect(
-      screen.getByText("Cherries")
+      screen.getByRole("region", {
+        name: /sales summary/i,
+      })
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("3")
+      screen.getByRole("heading", {
+        name: /sales summary for cherries/i,
+      })
     ).toBeInTheDocument();
 
-    expect(
-      screen.getByText("16,400")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Sales")).toBeInTheDocument();
+    expect(screen.getByText("3")).toBeInTheDocument();
+
+    expect(screen.getByText("Quantity")).toBeInTheDocument();
+    expect(screen.getByText("16,400")).toBeInTheDocument();
+
+    expect(screen.getByText("Total Sales")).toBeInTheDocument();
+    expect(screen.getByText("1197.12")).toBeInTheDocument();
+  });
+
+  it("shows the initial state when no product is selected", () => {
+    render(
+      <SalesSummary
+        productName=""
+        summary={null}
+        loading={false}
+        error={null}
+      />
+    );
 
     expect(
-      screen.getByText(/1,197\.12/)
-    ).toBeInTheDocument();
+      screen.queryByRole("region", {
+        name: /sales summary/i,
+      })
+    ).not.toBeInTheDocument();
   });
 });
