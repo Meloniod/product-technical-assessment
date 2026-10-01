@@ -59,17 +59,53 @@ Open `http://localhost:3000`. The frontend API URL is supplied through `NEXT_PUB
 
 ## Run With Docker Compose
 
-From the repository root, build and start both services:
+The base Compose configuration is the production deployment: it runs the API with `ASPNETCORE_ENVIRONMENT=Production` and the frontend with the Next.js production server. From the repository root, build and start both services:
 
 ```powershell
 docker compose up --build
 ```
 
-Open the frontend at `http://localhost:3000`. The API is published at `http://localhost:8080`, with Swagger at `http://localhost:8080/swagger`. The Compose build sets `NEXT_PUBLIC_API_BASE_URL` to the host-accessible API URL because API requests are made by the user's browser.
+By default, open the frontend at `http://localhost:3000` and the API at `http://localhost:8080`. Swagger is enabled only when the API runs in Development. The API provides `/health`; Compose checks both services and waits for the API to become healthy before starting the frontend.
 
-Docker Compose serves both services over HTTP, so this setup does not require or mount an HTTPS certificate. Use the manual setup above when you want HTTPS locally.
+### Configuration
 
-Stop the services with `Ctrl+C`, then remove the containers with:
+Set these variables in a root `.env` file before building. The file is git-ignored and Compose loads it automatically.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `ASPNETCORE_ENVIRONMENT` | `Production` | ASP.NET Core environment for the base Compose configuration. |
+| `NEXT_PUBLIC_API_BASE_URL` | `http://localhost:8080` | Browser-accessible API URL; this value is embedded in the frontend build. |
+| `FRONTEND_ORIGIN` | `http://localhost:3000` | Allowed browser origin for the API's CORS policy. |
+| `API_PORT` | `8080` | Host port published for the API. The container listens on `8080`. |
+| `FRONTEND_PORT` | `3000` | Host port published for the frontend. The container listens on `3000`. |
+
+Example production `.env` for a deployment behind HTTPS reverse proxies:
+
+```dotenv
+ASPNETCORE_ENVIRONMENT=Production
+NEXT_PUBLIC_API_BASE_URL=https://api.example.com
+FRONTEND_ORIGIN=https://dashboard.example.com
+API_PORT=8080
+FRONTEND_PORT=3000
+```
+
+`NEXT_PUBLIC_API_BASE_URL` must be reachable from users' browsers. Rebuild the frontend with `docker compose up --build` after changing it. Server-rendered frontend requests use the Compose-only address `API_INTERNAL_BASE_URL=http://api:8080`; this is separate from the browser URL and normally does not need changing. Set `API_PORT` and `FRONTEND_PORT` to different host ports if the defaults are already in use.
+
+### Development
+
+For containerized development, the override mounts both source trees and runs `dotnet watch` and `next dev`:
+
+```powershell
+docker compose -f .\docker-compose.yml -f .\docker-compose.development.yml up --build
+```
+
+This override sets the API environment to Development and the frontend's `NODE_ENV` to `development`. For local Docker use, the default API URL and frontend origin are already set to the published localhost ports. Stop this configuration with:
+
+```powershell
+docker compose -f .\docker-compose.yml -f .\docker-compose.development.yml down
+```
+
+Stop the production configuration with `Ctrl+C`, then remove the containers with:
 
 ```powershell
 docker compose down

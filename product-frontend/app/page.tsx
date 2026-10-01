@@ -1,6 +1,8 @@
 import { ProductDashboard } from "@/components/ProductDashboard";
 import { getProducts } from "@/lib/api/products";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const products = await getProducts();
   return (

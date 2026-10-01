@@ -4,6 +4,9 @@ using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 var allowSpecificOrigins = "_allowSpecificOrigins";
+var frontendOrigin =
+    builder.Configuration["FrontendOrigin"] ??
+    "http://localhost:3000";
 // Add services to the container.
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -15,7 +18,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: allowSpecificOrigins,
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000") 
+            policy.WithOrigins(frontendOrigin)
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -41,6 +44,7 @@ app.UseAuthorization();
 
 app.UseExceptionHandler();
 
+app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 app.MapControllers();
 
 app.Run();
