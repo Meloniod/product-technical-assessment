@@ -1,12 +1,17 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getProducts,
   getProductSalesSummary
 } from "./products";
 
 describe("products API client", () => {
+  beforeEach(() => {
+    vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", "http://localhost:5000");
+  });
+
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllEnvs();
   });
 
   it("gets all products", async () => {
