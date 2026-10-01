@@ -4,6 +4,7 @@ using Domain.Sales;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Polly.Timeout;
 
 namespace Api.Tests.Controllers
@@ -207,6 +208,9 @@ namespace Api.Tests.Controllers
                 Assert.Equal(
                     HttpStatusCode.BadGateway,
                     response.StatusCode);
+                Assert.Equal(
+                    "application/problem+json",
+                    response.Content.Headers.ContentType?.MediaType);
             }
             finally
             {
@@ -230,6 +234,58 @@ namespace Api.Tests.Controllers
                 Assert.Equal(
                     HttpStatusCode.GatewayTimeout,
                     response.StatusCode);
+            }
+            finally
+            {
+                _factory.ApiClient.ExceptionToThrow = null;
+            }
+        }
+
+        [Fact]
+        public async Task GetProducts_WhenExternalApiCancels_ReturnsGatewayTimeoutProblemDetails()
+        {
+            _factory.ApiClient.ExceptionToThrow =
+                new TaskCanceledException(
+                    "The external API timed out.");
+
+            try
+            {
+                var response =
+                    await _client.GetAsync(
+                        "/api/products");
+
+                Assert.Equal(
+                    HttpStatusCode.GatewayTimeout,
+                    response.StatusCode);
+                Assert.Equal(
+                    "application/problem+json",
+                    response.Content.Headers.ContentType?.MediaType);
+            }
+            finally
+            {
+                _factory.ApiClient.ExceptionToThrow = null;
+            }
+        }
+
+        [Fact]
+        public async Task GetProducts_WhenExternalApiReturnsInvalidJson_ReturnsBadGateway()
+        {
+            _factory.ApiClient.ExceptionToThrow =
+                new JsonException(
+                    "The external API returned invalid JSON.");
+
+            try
+            {
+                var response =
+                    await _client.GetAsync(
+                        "/api/products");
+
+                Assert.Equal(
+                    HttpStatusCode.BadGateway,
+                    response.StatusCode);
+                Assert.Equal(
+                    "application/problem+json",
+                    response.Content.Headers.ContentType?.MediaType);
             }
             finally
             {

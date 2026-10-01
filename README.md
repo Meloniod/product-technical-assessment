@@ -75,7 +75,8 @@ Set these variables in a root `.env` file before building. The file is git-ignor
 | --- | --- | --- |
 | `ASPNETCORE_ENVIRONMENT` | `Production` | ASP.NET Core environment for the base Compose configuration. |
 | `NEXT_PUBLIC_API_BASE_URL` | `http://localhost:8080` | Browser-accessible API URL; this value is embedded in the frontend build. |
-| `FRONTEND_ORIGIN` | `http://localhost:3000` | Allowed browser origin for the API's CORS policy. |
+| `FRONTEND_ORIGIN` | `http://localhost:3000` | Allowed browser origin, bound to `Cors:AllowedOrigins` in the API. |
+| `ALLOWED_HOSTS` | `localhost;127.0.0.1;api` | Semicolon-separated host names accepted by ASP.NET Core host filtering. |
 | `API_PORT` | `8080` | Host port published for the API. The container listens on `8080`. |
 | `FRONTEND_PORT` | `3000` | Host port published for the frontend. The container listens on `3000`. |
 
@@ -85,11 +86,12 @@ Example production `.env` for a deployment behind HTTPS reverse proxies:
 ASPNETCORE_ENVIRONMENT=Production
 NEXT_PUBLIC_API_BASE_URL=https://api.example.com
 FRONTEND_ORIGIN=https://dashboard.example.com
+ALLOWED_HOSTS=api.example.com
 API_PORT=8080
 FRONTEND_PORT=3000
 ```
 
-`NEXT_PUBLIC_API_BASE_URL` must be reachable from users' browsers. Rebuild the frontend with `docker compose up --build` after changing it. Server-rendered frontend requests use the Compose-only address `API_INTERNAL_BASE_URL=http://api:8080`; this is separate from the browser URL and normally does not need changing. Set `API_PORT` and `FRONTEND_PORT` to different host ports if the defaults are already in use.
+`NEXT_PUBLIC_API_BASE_URL` must be reachable from users' browsers. Rebuild the frontend with `docker compose up --build` after changing it. Server-rendered frontend requests use the Compose-only address `API_INTERNAL_BASE_URL=http://api:8080`; this is separate from the browser URL and normally does not need changing. `FRONTEND_ORIGIN` binds to `Cors:AllowedOrigins`; the API validates it as an absolute HTTP or HTTPS origin. `ALLOWED_HOSTS` configures ASP.NET Core host filtering and should contain the API host name(s), separated by semicolons. Set `API_PORT` and `FRONTEND_PORT` to different host ports if the defaults are already in use.
 
 ### Development
 

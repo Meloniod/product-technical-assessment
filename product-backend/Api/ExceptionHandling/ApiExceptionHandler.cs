@@ -1,17 +1,22 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Polly.Timeout;
+using System.Text.Json;
 
 namespace Api.ExceptionHandling
 {
     public sealed class ApiExceptionHandler : IExceptionHandler
     {
         private readonly ILogger<ApiExceptionHandler> _logger;
+        private readonly IProblemDetailsService _problemDetailsService;
 
         public ApiExceptionHandler(
-            ILogger<ApiExceptionHandler> logger)
+            ILogger<ApiExceptionHandler> logger,
+            IProblemDetailsService problemDetailsService)
         {
             _logger = logger;
+            _problemDetailsService = problemDetailsService;
         }
 
         public async ValueTask<bool> TryHandleAsync(
@@ -42,7 +47,7 @@ namespace Api.ExceptionHandling
                         Detail = exception.Message
                     },
 
-                TimeoutRejectedException =>
+                TimeoutRejectedException or TaskCanceledException =>
                     new ProblemDetails
                     {
                         Status = StatusCodes.Status504GatewayTimeout,
@@ -51,13 +56,15 @@ namespace Api.ExceptionHandling
                             "The product service did not respond in time."
                     },
 
-                HttpRequestException =>
+                HttpRequestException or JsonException =>
                     new ProblemDetails
                     {
                         Status = StatusCodes.Status502BadGateway,
                         Title = "External service unavailable.",
                         Detail =
-                            "The product service could not be reached."
+                            exception is JsonException
+                                ? "The product service returned an invalid response."
+                                : "The product service could not be reached."
                     },
 
                 _ =>
@@ -74,9 +81,13 @@ namespace Api.ExceptionHandling
             httpContext.Response.StatusCode =
                 problemDetails.Status!.Value;
 
-            await httpContext.Response.WriteAsJsonAsync(
-                problemDetails,
-                cancellationToken);
+            await _problemDetailsService.WriteAsync(
+                new ProblemDetailsContext
+                {
+                    HttpContext = httpContext,
+                    ProblemDetails = problemDetails,
+                    Exception = exception
+                });
 
             return true;
         }
