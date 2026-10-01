@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Product Dashboard Frontend
 
-## Getting Started
+This Next.js application displays the product catalog and requests a sales summary when a product is selected. It shows loading, service-error, and product-not-found states for the summary request.
 
-First, run the development server:
+## Requirements
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Node.js 22 and npm
+- The product backend running locally to use the dashboard
+
+## Install
+
+From this directory, install the locked dependencies:
+
+```powershell
+npm ci
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Run Locally
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Start the backend using the instructions in the repository-root README. The HTTPS launch profile serves the API at `https://localhost:7220`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Set the API base URL and start the frontend from this directory:
 
-## Learn More
+```powershell
+$env:NEXT_PUBLIC_API_BASE_URL = "https://localhost:7220"
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open [http://localhost:3000](http://localhost:3000). The API base URL must be available when the app is built or started because the browser uses it for product and sales-summary requests.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Test
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Frontend tests use Vitest and mock network requests. They are self-contained: no running backend or `NEXT_PUBLIC_API_BASE_URL` is required.
 
-## Deploy on Vercel
+Run the full test suite from this directory:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```powershell
+npm test
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Run one test file:
+
+```powershell
+npm test -- components/ProductDashboard.test.tsx
+```
+
+Run tests in watch mode:
+
+```powershell
+npm run test:watch
+```
+
+## Quality Checks
+
+Run ESLint:
+
+```powershell
+npm run lint
+```
+
+Create a production build:
+
+```powershell
+npm run build
+```

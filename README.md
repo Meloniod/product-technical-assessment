@@ -74,3 +74,9 @@ Stop the services with `Ctrl+C`, then remove the containers with:
 ```powershell
 docker compose down
 ```
+
+## AI Assistance
+
+ChatGPT and GitHub Copilot were used as development aids during this assessment. They helped explore implementation options, reason through API and frontend behavior, and refine code and tests. They also assisted with preparing project setup, testing, and usage documentation.
+
+AI suggestions were treated as a starting point, not as authoritative output. I reviewed and adapted the changes to the existing architecture and requirements, and I remain responsible for the final implementation and its correctness. Test and validation status should be judged from the commands actually run and their reported results, rather than inferred from AI-generated suggestions.
