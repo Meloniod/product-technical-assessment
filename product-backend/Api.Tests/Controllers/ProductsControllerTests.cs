@@ -1,6 +1,7 @@
 ﻿using Api.Models;
 using Domain.Products;
 using Domain.Sales;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Net.Http.Json;
 using Polly.Timeout;
@@ -70,6 +71,17 @@ namespace Api.Tests.Controllers
         [Fact]
         public async Task GetProductSalesSummary_ReturnsSummary()
         {
+            _factory.ApiClient.Products =
+                new List<Product>
+                {
+                    new(
+                        id: 20,
+                        description: "Cherries",
+                        salePrice: 16.2m,
+                        category: "Fruit",
+                        image: "https://example.com/cherries.jpg")
+                };
+
             _factory.ApiClient.Sales =
                 new List<Sale>
                 {
@@ -127,6 +139,40 @@ namespace Api.Tests.Controllers
             Assert.Equal(
                 20,
                 _factory.ApiClient.RequestedProductId);
+        }
+
+        [Fact]
+        public async Task GetProductSalesSummary_WhenProductDoesNotExist_ReturnsNotFoundProblemDetails()
+        {
+            _factory.ApiClient.Products =
+                new List<Product>
+                {
+                    new(
+                        id: 20,
+                        description: "Cherries",
+                        salePrice: 16.2m,
+                        category: "Fruit",
+                        image: "https://example.com/cherries.jpg")
+                };
+
+            var response =
+                await _client.GetAsync(
+                    "/api/products/999/sales-summary");
+
+            Assert.Equal(
+                HttpStatusCode.NotFound,
+                response.StatusCode);
+
+            var problem =
+                await response.Content
+                    .ReadFromJsonAsync<ProblemDetails>();
+
+            Assert.NotNull(problem);
+            Assert.Equal(404, problem.Status);
+            Assert.Equal("Product not found.", problem.Title);
+            Assert.Equal(
+                "Product with ID 999 was not found.",
+                problem.Detail);
         }
 
         [Theory]

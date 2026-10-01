@@ -1,6 +1,7 @@
 ﻿using Application.Services;
 using Application.Services.Helpers;
 using Application.Tests.Mocks;
+using Domain.Products;
 using Domain.Sales;
 
 namespace Application.Tests.Services
@@ -13,6 +14,15 @@ namespace Application.Tests.Services
             // Arrange
             var apiClient = new MockProductSalesApiClient
             {
+                Products = new List<Product>
+                {
+                    new(
+                        id: 20,
+                        description: "Cherries",
+                        salePrice: 16.2m,
+                        category: "Fruit",
+                        image: "https://example.com/cherries.jpg")
+                },
                 Sales = new List<Sale>
             {
                 new(
@@ -49,7 +59,18 @@ namespace Application.Tests.Services
         public async Task GivenSalesSummaryAsync_WhenProductIdisInvalidId_ThenMethodThrows(int productId)
         {
             // Arrange
-            var apiClient = new MockProductSalesApiClient();
+            var apiClient = new MockProductSalesApiClient
+            {
+                Products = new List<Product>
+                {
+                    new(
+                        id: 20,
+                        description: "Cherries",
+                        salePrice: 16.2m,
+                        category: "Fruit",
+                        image: "https://example.com/cherries.jpg")
+                }
+            };
 
             var calculator = new SalesSummaryCalculator();
 
@@ -66,10 +87,36 @@ namespace Application.Tests.Services
         }
 
         [Fact]
+        public async Task GivenUnknownProduct_WhenGettingSalesSummary_ThenThrowsKeyNotFoundException()
+        {
+            var apiClient = new MockProductSalesApiClient();
+
+            var service = new ProductSalesService(
+                apiClient,
+                new SalesSummaryCalculator());
+
+            await Assert.ThrowsAsync<KeyNotFoundException>(
+                () => service.GetProductSalesSummaryAsync(
+                    999,
+                    CancellationToken.None));
+        }
+
+        [Fact]
         public async Task GivenRequestProductSalesSummary_WhenCancellationTokenSentInRequest_ThenPropagateCancellationToken()
         {
             // Arrange
-            var apiClient = new MockProductSalesApiClient();
+            var apiClient = new MockProductSalesApiClient
+            {
+                Products = new List<Product>
+                {
+                    new(
+                        id: 20,
+                        description: "Cherries",
+                        salePrice: 16.2m,
+                        category: "Fruit",
+                        image: "https://example.com/cherries.jpg")
+                }
+            };
 
             var calculator = new SalesSummaryCalculator();
 

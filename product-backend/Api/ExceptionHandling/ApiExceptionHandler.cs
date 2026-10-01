@@ -34,6 +34,14 @@ namespace Api.ExceptionHandling
                         Title = "Invalid request."
                     },
 
+                KeyNotFoundException =>
+                    new ProblemDetails
+                    {
+                        Status = StatusCodes.Status404NotFound,
+                        Title = "Product not found.",
+                        Detail = exception.Message
+                    },
+
                 TimeoutRejectedException =>
                     new ProblemDetails
                     {

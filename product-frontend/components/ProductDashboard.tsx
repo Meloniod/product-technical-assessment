@@ -6,7 +6,10 @@ import type {
   Product
 } from "@/types/product";
 
-import { getProductSalesSummary } from "@/lib/api/products";
+import {
+  ApiError,
+  getProductSalesSummary
+} from "@/lib/api/products";
 
 import { ProductGrid } from "./ProductGrid";
 import { SalesSummary } from "./SalesSummary";
@@ -31,6 +34,9 @@ export function ProductDashboard({
   const [error, setError] =
     useState<string | null>(null);
 
+  const [notFound, setNotFound] =
+    useState(false);
+
   const requestController =
     useRef<AbortController | null>(null);
 
@@ -53,6 +59,7 @@ export function ProductDashboard({
     setSelectedProduct(product);
     setSummary(null);
     setError(null);
+    setNotFound(false);
     setLoading(true);
 
     try {
@@ -74,11 +81,15 @@ export function ProductDashboard({
       }
 
       if (!controller.signal.aborted) {
-        setError(
-          error instanceof Error
-            ? error.message
-            : "Unable to load sales summary."
-        );
+        if (error instanceof ApiError && error.status === 404) {
+          setNotFound(true);
+        } else {
+          setError(
+            error instanceof Error
+              ? error.message
+              : "Unable to load sales summary."
+          );
+        }
       }
     } finally {
       if (!controller.signal.aborted) {
@@ -102,6 +113,7 @@ export function ProductDashboard({
         summary={summary}
         loading={loading}
         error={error}
+        notFound={notFound}
       />
     </div>
   );

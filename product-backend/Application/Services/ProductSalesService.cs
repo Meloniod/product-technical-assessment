@@ -35,6 +35,15 @@ namespace Application.Services
                     "Product ID must be greater than zero.");
             }
 
+            var products = await _apiClient.GetProductsAsync(
+                cancellationToken);
+
+            if (!products.Any(product => product.Id == productId))
+            {
+                throw new KeyNotFoundException(
+                    $"Product with ID {productId} was not found.");
+            }
+
             var sales = await _apiClient.GetProductSalesAsync(
                 productId,
                 cancellationToken);

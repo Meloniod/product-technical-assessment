@@ -10,6 +10,7 @@ describe("SalesSummary", () => {
         summary={null}
         loading={true}
         error={null}
+        notFound={false}
       />
     );
 
@@ -25,6 +26,7 @@ describe("SalesSummary", () => {
         summary={null}
         loading={false}
         error="Unable to contact the sales service."
+        notFound={false}
       />
     );
 
@@ -39,12 +41,35 @@ describe("SalesSummary", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows a not-found state", () => {
+    render(
+      <SalesSummary
+        productName="Cherries"
+        summary={null}
+        loading={false}
+        error={null}
+        notFound={true}
+      />
+    );
+
+    expect(
+      screen.getByRole("region", {
+        name: /product not found/i,
+      })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Cherries is no longer available.")
+    ).toBeInTheDocument();
+  });
+
   it("renders the sales summary", () => {
     render(
       <SalesSummary
         productName="Cherries"
         loading={false}
         error={null}
+        notFound={false}
         summary={{
           productId: 20,
           numberOfSales: 3,
@@ -83,6 +108,7 @@ describe("SalesSummary", () => {
         summary={null}
         loading={false}
         error={null}
+        notFound={false}
       />
     );
 

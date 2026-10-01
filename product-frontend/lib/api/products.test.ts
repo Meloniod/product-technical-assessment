@@ -102,8 +102,10 @@ describe("products API client", () => {
       )
     );
 
-    await expect(getProducts()).rejects.toThrow(
-      "The product service could not be reached."
-    );
+    await expect(getProducts()).rejects.toMatchObject({
+      name: "ApiError",
+      status: 502,
+      message: "The product service could not be reached.",
+    });
   });
 });

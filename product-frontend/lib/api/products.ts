@@ -3,6 +3,16 @@ import type {
 } from "@/types/product";
 import { ProductSalesSummary } from "@/types/productSalesSummary";
 
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    readonly status: number
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
 function getApiBaseUrl(): string {
   const baseUrl =
     process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -36,7 +46,7 @@ async function handleResponse<T>(
       // Keep the default message.
     }
 
-    throw new Error(message);
+    throw new ApiError(message, response.status);
   }
 
   return response.json() as Promise<T>;

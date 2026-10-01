@@ -15,11 +15,27 @@ import userEvent from "@testing-library/user-event";
 import { ProductDashboard } from "./ProductDashboard";
 import type { Product } from "@/types/product";
 
-vi.mock("@/lib/api/products", () => ({
-  getProductSalesSummary: vi.fn(),
-}));
+vi.mock("@/lib/api/products", () => {
+  class ApiError extends Error {
+    constructor(
+      message: string,
+      readonly status: number
+    ) {
+      super(message);
+      this.name = "ApiError";
+    }
+  }
 
-import { getProductSalesSummary } from "@/lib/api/products";
+  return {
+    ApiError,
+    getProductSalesSummary: vi.fn(),
+  };
+});
+
+import {
+  ApiError,
+  getProductSalesSummary
+} from "@/lib/api/products";
 
 const products: Product[] = [
   {
@@ -145,6 +161,34 @@ describe("ProductDashboard", () => {
         screen.getByText(
           "Unable to load sales summary."
         )
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("displays a not-found state for a 404 response", async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(
+      getProductSalesSummary
+    ).mockRejectedValue(
+      new ApiError("Product not found.", 404)
+    );
+
+    render(
+      <ProductDashboard products={products} />
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: /view sales summary for cherries/i
+      })
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("region", {
+          name: /product not found/i,
+        })
       ).toBeInTheDocument();
     });
   });

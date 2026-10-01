@@ -8,6 +8,7 @@ interface SalesSummaryProps {
   summary: ProductSalesSummary | null;
   loading: boolean;
   error: string | null;
+  notFound: boolean;
 }
 
 export function SalesSummary({
@@ -15,12 +16,29 @@ export function SalesSummary({
   summary,
   loading,
   error,
+  notFound,
 }: SalesSummaryProps) {
   if (loading) {
     return (
       <p className="text-sm text-gray-500" role="status">
         Loading sales summary...
       </p>
+    );
+  }
+
+  if (notFound) {
+    return (
+      <section aria-label="Product not found">
+        <h3 className="text-sm font-semibold text-gray-900">
+          Product not found
+        </h3>
+
+        <p className="mt-1 text-sm text-gray-600">
+          {productName
+            ? `${productName} is no longer available.`
+            : "This product is no longer available."}
+        </p>
+      </section>
     );
   }
 
