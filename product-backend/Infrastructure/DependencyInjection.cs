@@ -25,9 +25,15 @@ namespace Infrastructure
                             out _),
                     "SalesApi:BaseUrl must be a valid absolute URI.")
                 .Validate(
-                    options => options.TimeoutSeconds > 0,
-                    "SalesApi:TimeoutSeconds must be greater than zero.")
+                    options => options.TimeoutSeconds is >= 10 and <= 30,
+                    "SalesApi:TimeoutSeconds must be between 10 and 30.")
                 .ValidateOnStart();
+
+            var timeoutSeconds =
+                configuration
+                    .GetSection(SalesApiOptions.SectionName)
+                    .Get<SalesApiOptions>()?
+                    .TimeoutSeconds ?? 20;
 
             services.AddHttpClient<
                 IProductSalesApiClient,
@@ -44,8 +50,12 @@ namespace Infrastructure
                         new Uri(options.BaseUrl);
 
                     client.Timeout =
-                        TimeSpan.FromSeconds(
-                            options.TimeoutSeconds);
+                        Timeout.InfiniteTimeSpan;
+                })
+                .AddStandardResilienceHandler(options =>
+                {
+                    options.TotalRequestTimeout.Timeout =
+                        TimeSpan.FromSeconds(timeoutSeconds);
                 });
 
             return services;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Polly.Timeout;
 
 namespace Api.ExceptionHandling
 {
@@ -31,6 +32,15 @@ namespace Api.ExceptionHandling
                     {
                         Status = StatusCodes.Status400BadRequest,
                         Title = "Invalid request."
+                    },
+
+                TimeoutRejectedException =>
+                    new ProblemDetails
+                    {
+                        Status = StatusCodes.Status504GatewayTimeout,
+                        Title = "External service timed out.",
+                        Detail =
+                            "The product service did not respond in time."
                     },
 
                 HttpRequestException =>

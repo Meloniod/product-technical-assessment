@@ -6,6 +6,6 @@
 
         public string BaseUrl { get; init; } = string.Empty;
 
-        public int TimeoutSeconds { get; init; } = 300;
+        public int TimeoutSeconds { get; init; } = 20;
     }
 }

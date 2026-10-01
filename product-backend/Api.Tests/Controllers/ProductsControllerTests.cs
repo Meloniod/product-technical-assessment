@@ -3,6 +3,7 @@ using Domain.Products;
 using Domain.Sales;
 using System.Net;
 using System.Net.Http.Json;
+using Polly.Timeout;
 
 namespace Api.Tests.Controllers
 {
@@ -159,6 +160,29 @@ namespace Api.Tests.Controllers
 
                 Assert.Equal(
                     HttpStatusCode.BadGateway,
+                    response.StatusCode);
+            }
+            finally
+            {
+                _factory.ApiClient.ExceptionToThrow = null;
+            }
+        }
+
+        [Fact]
+        public async Task GetProducts_WhenExternalApiTimesOut_ReturnsGatewayTimeout()
+        {
+            _factory.ApiClient.ExceptionToThrow =
+                new TimeoutRejectedException(
+                    "The external API timed out.");
+
+            try
+            {
+                var response =
+                    await _client.GetAsync(
+                        "/api/products");
+
+                Assert.Equal(
+                    HttpStatusCode.GatewayTimeout,
                     response.StatusCode);
             }
             finally
