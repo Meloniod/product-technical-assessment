@@ -2,7 +2,7 @@ This repository contains a product dashboard with a Next.js frontend and an ASP.
 
 ## Requirements
 
-- .NET 8 SDK and Node.js 22 (with npm) to run the applications manually.
+- .NET 8 SDK is required by the assessment instructions and is the target framework for the backend projects. Node.js 22 (with npm) is required for the frontend.
 - Docker with the Docker Compose plugin to run the containerized applications.
 
 ## Run Tests
