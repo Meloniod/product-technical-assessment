@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
-  getProducts
+  getProducts,
+  getProductSalesSummary
 } from "./products";
 
 describe("products API client", () => {
